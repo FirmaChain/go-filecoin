@@ -29,7 +29,8 @@ func TestOutbox(t *testing.T) {
 		provider := message.NewFakeProvider(t)
 		bcast := true
 
-		ob := message.NewOutbox(w, message.FakeValidator{RejectMessages: true}, queue, publisher, message.NullPolicy{}, provider, provider)
+		ob := message.NewOutbox(w, message.FakeValidator{RejectMessages: true}, queue, publisher,
+			message.NullPolicy{}, provider, provider, newOutboxTestJournal())
 
 		cid, err := ob.Send(context.Background(), sender, sender, types.NewAttoFILFromFIL(2), types.NewGasPrice(0), types.NewGasUnits(0), bcast, "")
 		assert.Errorf(t, err, "for testing")
@@ -51,7 +52,7 @@ func TestOutbox(t *testing.T) {
 		actr.Nonce = 42
 		provider.SetHeadAndActor(t, head.Key(), sender, actr)
 
-		ob := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider)
+		ob := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider, newOutboxTestJournal())
 		require.Empty(t, queue.List(sender))
 		require.Nil(t, publisher.Message)
 
@@ -92,7 +93,7 @@ func TestOutbox(t *testing.T) {
 		actr.Nonce = 42
 		provider.SetHeadAndActor(t, head.Key(), sender, actr)
 
-		s := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider)
+		s := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider, newOutboxTestJournal())
 
 		var wg sync.WaitGroup
 		addTwentyMessages := func(batch int) {
@@ -141,7 +142,7 @@ func TestOutbox(t *testing.T) {
 		actr := storagemarket.NewActor() // Not an account actor
 		provider.SetHeadAndActor(t, head.Key(), sender, actr)
 
-		ob := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider)
+		ob := message.NewOutbox(w, message.FakeValidator{}, queue, publisher, message.NullPolicy{}, provider, provider, newOutboxTestJournal())
 
 		_, err := ob.Send(context.Background(), sender, toAddr, types.ZeroAttoFIL, types.NewGasPrice(0), types.NewGasUnits(0), true, "")
 		assert.Error(t, err)

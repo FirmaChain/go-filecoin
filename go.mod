@@ -53,7 +53,6 @@ require (
 	github.com/ipfs/go-ipfs-exchange-interface v0.0.1
 	github.com/ipfs/go-ipfs-exchange-offline v0.0.1
 	github.com/ipfs/go-ipfs-files v0.0.1
-	github.com/ipfs/go-ipfs-flags v0.0.1 // indirect
 	github.com/ipfs/go-ipfs-keystore v0.0.1
 	github.com/ipfs/go-ipfs-routing v0.1.0
 	github.com/ipfs/go-ipld-cbor v0.0.3
@@ -78,14 +77,11 @@ require (
 	github.com/libp2p/go-libp2p-autonat-svc v0.1.0
 	github.com/libp2p/go-libp2p-circuit v0.1.0
 	github.com/libp2p/go-libp2p-core v0.0.9
-	github.com/libp2p/go-libp2p-host v0.0.1 // indirect
 	github.com/libp2p/go-libp2p-kad-dht v0.1.1
-	github.com/libp2p/go-libp2p-metrics v0.0.1 // indirect
 	github.com/libp2p/go-libp2p-peerstore v0.1.2
 	github.com/libp2p/go-libp2p-pubsub v0.1.0
 	github.com/libp2p/go-libp2p-swarm v0.1.1
 	github.com/libp2p/go-stream-muxer v0.0.1
-	github.com/libp2p/go-testutil v0.0.1 // indirect
 	github.com/magiconair/properties v1.8.1
 	github.com/miekg/dns v1.1.15 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1
@@ -127,6 +123,7 @@ require (
 	github.com/xeipuuv/gojsonschema v1.1.0
 	go.etcd.io/bbolt v1.3.3 // indirect
 	go.opencensus.io v0.22.0
+	go.uber.org/zap v1.10.0
 	golang.org/x/exp v0.0.0-20190718202018-cfdd5522f6f6 // indirect
 	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect
 	golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028 // indirect
