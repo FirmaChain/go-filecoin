@@ -32,7 +32,7 @@ type Builder struct {
 	seq          uint64 // For unique tickets
 
 	blocks   map[cid.Cid]*types.Block
-	messages map[cid.Cid][]*types.SignedMessage
+	messages map[types.TxMeta][]*types.SignedMessage
 	receipts map[cid.Cid][]*types.MessageReceipt
 	// Cache of the state root CID computed for each tipset key.
 	tipStateCids map[string]cid.Cid
@@ -58,12 +58,12 @@ func NewBuilder(t *testing.T, miner address.Address) *Builder {
 		stateBuilder: &FakeStateBuilder{},
 		blocks:       make(map[cid.Cid]*types.Block),
 		tipStateCids: make(map[string]cid.Cid),
-		messages:     make(map[cid.Cid][]*types.SignedMessage),
+		messages:     make(map[types.TxMeta][]*types.SignedMessage),
 		receipts:     make(map[cid.Cid][]*types.MessageReceipt),
 	}
 
-	b.messages[types.EmptyMessagesCID] = []*types.SignedMessage{}
-	b.receipts[types.EmptyReceiptsCID] = []*types.MessageReceipt{}
+	b.messages[types.TxMeta{types.EmptyMessagesCID, types.EmptyMessagesCID}] = []*types.SignedMessage{}
+	b.receipts[types.EmptyMessagesCID] = []*types.MessageReceipt{}
 
 	nullState, err := makeCid("null")
 	require.NoError(t, err)
@@ -175,7 +175,7 @@ func (f *Builder) Build(parent types.TipSet, width int, build func(b *BlockBuild
 			ParentWeight:    types.Uint64(parentWeight),
 			Parents:         parent.Key(),
 			Height:          height,
-			Messages:        types.EmptyMessagesCID,
+			Messages:        types.TxMeta{types.EmptyMessagesCID, types.EmptyMessagesCID},
 			MessageReceipts: types.EmptyReceiptsCID,
 			// Omitted fields below
 			//StateRoot:       stateRoot,
@@ -255,7 +255,7 @@ type BlockBuilder struct {
 	block *types.Block
 	t     *testing.T
 	// These maps should be set to share data with the builder.
-	messages map[cid.Cid][]*types.SignedMessage
+	messages map[types.TxMeta][]*types.SignedMessage
 	receipts map[cid.Cid][]*types.MessageReceipt
 }
 
@@ -279,12 +279,13 @@ func (bb *BlockBuilder) IncHeight(nullBlocks types.Uint64) {
 func (bb *BlockBuilder) AddMessages(msgs []*types.SignedMessage, rcpts []*types.MessageReceipt) {
 	cM, err := makeCid(msgs)
 	require.NoError(bb.t, err)
-	bb.messages[cM] = msgs
+	meta := types.TxMeta{SecpRoot: cM, BLSRoot: types.EmptyMessagesCID}
+	bb.messages[meta] = msgs
 	cR, err := makeCid(rcpts)
 	require.NoError(bb.t, err)
 	bb.receipts[cR] = rcpts
 
-	bb.block.Messages = cM
+	bb.block.Messages = meta
 	bb.block.MessageReceipts = cR
 }
 
@@ -460,12 +461,12 @@ func (f *Builder) RequireTipSets(head types.TipSetKey, count int) []types.TipSet
 }
 
 // LoadMessages returns the message collections tracked by the builder.
-func (f *Builder) LoadMessages(ctx context.Context, c cid.Cid) ([]*types.SignedMessage, error) {
-	msgs, ok := f.messages[c]
+func (f *Builder) LoadMessages(ctx context.Context, meta types.TxMeta) ([]*types.SignedMessage, []*types.SignedMessage, error) {
+	msgs, ok := f.messages[meta]
 	if !ok {
-		return nil, errors.Errorf("no message for %s", c)
+		return nil, nil, errors.Errorf("no message for %s", meta.SecpRoot)
 	}
-	return msgs, nil
+	return msgs, []*types.SignedMessage{}, nil
 }
 
 // LoadReceipts returns the message collections tracked by the builder.

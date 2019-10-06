@@ -161,7 +161,7 @@ func (syncer *Syncer) syncOne(ctx context.Context, parent, next types.TipSet) er
 	var nextReceipts [][]*types.MessageReceipt
 	for i := 0; i < next.Len(); i++ {
 		blk := next.At(i)
-		msgs, err := syncer.messageProvider.LoadMessages(ctx, blk.Messages.SecpMessages)
+		secpMsgs, _, err := syncer.messageProvider.LoadMessages(ctx, blk.Messages)
 		if err != nil {
 			return errors.Wrapf(err, "syncing tip %s failed loading message list %s for block %s", next.Key(), blk.Messages, blk.Cid())
 		}
@@ -169,7 +169,7 @@ func (syncer *Syncer) syncOne(ctx context.Context, parent, next types.TipSet) er
 		if err != nil {
 			return errors.Wrapf(err, "syncing tip %s failed loading receipts list %s for block %s", next.Key(), blk.MessageReceipts, blk.Cid())
 		}
-		nextMessages = append(nextMessages, msgs)
+		nextMessages = append(nextMessages, secpMsgs)
 		nextReceipts = append(nextReceipts, rcpts)
 	}
 
