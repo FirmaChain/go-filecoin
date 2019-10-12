@@ -18,8 +18,8 @@ import (
 	"github.com/filecoin-project/go-filecoin/types"
 )
 
-func newOutboxTestJournal() journal.Writer {
-	return journal.NewInMemoryJournal(th.NewFakeSystemClock(time.Unix(1234567890, 0))).Topic("outbox")
+func newOutboxTestJournal(t *testing.T) journal.Writer {
+	return journal.NewInMemoryJournal(t, th.NewFakeSystemClock(time.Unix(1234567890, 0))).Topic("outbox")
 }
 
 // TestNewHeadHandlerIntegration tests inbox and outbox policy consistency.
@@ -44,7 +44,7 @@ func TestNewHeadHandlerIntegration(t *testing.T) {
 		publisher := message.NewDefaultPublisher(&message.MockNetworkPublisher{}, "Topic", mpool)
 		policy := message.NewMessageQueuePolicy(provider, maxAge)
 		outbox := message.NewOutbox(signer, &message.FakeValidator{}, queue, publisher, policy,
-			provider, provider, newOutboxTestJournal())
+			provider, provider, newOutboxTestJournal(t))
 
 		return message.NewHeadHandler(inbox, outbox, provider, root)
 	}

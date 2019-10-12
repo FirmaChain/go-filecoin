@@ -157,7 +157,7 @@ func (nc *Builder) build(ctx context.Context) (*Node, error) {
 		nc.Clock = clock.NewSystemClock()
 	}
 	if nc.Journal == nil {
-		nc.Journal = journal.NewInMemoryJournal(nc.Clock)
+		nc.Journal = journal.NewNoopJournal()
 	}
 
 	bs := bstore.NewBlockstore(nc.Repo.Datastore())
