@@ -25,7 +25,7 @@ type NetworkSubmodule struct {
 	// Router is a router from IPFS
 	Router routing.Routing
 
-	fsub *libp2pps.PubSub
+	gsub *libp2pps.PubSub
 
 	// TODO: split chain bitswap from storage bitswap (issue: ???)
 	bitswap exchange.Interface
